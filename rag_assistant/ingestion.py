@@ -100,3 +100,10 @@ def _chunk_document(text: str, source: str, max_chars: int) -> list[DocumentChun
 
     flush()
     return chunks
+
+
+def chunk_text(text: str, source: str, max_chars: int = 1000) -> list[DocumentChunk]:
+    """Split extracted text while keeping source lines for citations."""
+    if max_chars < 100:
+        raise ValueError("max_chars debe ser al menos 100")
+    return _chunk_document(text, source, max_chars)

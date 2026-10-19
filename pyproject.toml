@@ -5,9 +5,20 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pof-document-assistant-rag"
 version = "0.1.0"
-description = "Educational local RAG assistant for TXT and Markdown documents"
+description = "Educational local RAG assistant for text, Markdown, and reviewed PDF documents"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "alembic>=1.13,<2",
+    "fastapi>=0.115,<1",
+    "pdfplumber>=0.11,<1",
+    "pillow>=10,<13",
+    "pypdfium2>=4.30,<6",
+    "psycopg[binary]>=3.2,<4",
+    "python-multipart>=0.0.9,<1",
+    "pytesseract>=0.3.13,<1",
+    "sqlalchemy>=2.0,<3",
+    "uvicorn[standard]>=0.30,<1",
+]
 
 [project.scripts]
 rag-assistant = "rag_assistant.cli:main"

@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml ./
+COPY rag_assistant ./rag_assistant
+COPY alembic.ini ./
+COPY migrations ./migrations
+RUN pip install --no-cache-dir . \
+    && useradd --create-home --uid 10001 app \
+    && mkdir -p /data/uploads \
+    && chown -R app:app /app /data
+
+USER app
+EXPOSE 8000
+CMD ["sh", "-c", "alembic upgrade head && uvicorn rag_assistant.web.app:app --host 0.0.0.0 --port 8000"]

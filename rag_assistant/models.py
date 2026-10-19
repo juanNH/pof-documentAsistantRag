@@ -10,9 +10,16 @@ class DocumentChunk:
     line_start: int
     line_end: int
     text: str
+    page_start: int | None = None
+    page_end: int | None = None
 
     @property
     def citation(self) -> str:
+        if self.page_start is not None:
+            end = self.page_end or self.page_start
+            if self.page_start == end:
+                return f"{self.source}:p.{self.page_start}"
+            return f"{self.source}:p.{self.page_start}-p.{end}"
         if self.line_start == self.line_end:
             return f"{self.source}:L{self.line_start}"
         return f"{self.source}:L{self.line_start}-L{self.line_end}"

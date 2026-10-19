@@ -1,0 +1,85 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rag_assistant
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdevpassword}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag_assistant"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: rag_assistant
+      DB_USER: rag
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-localdevpassword}
+      DOCUMENT_STORAGE_PATH: /data/uploads
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-15728640}
+      MAX_PDF_PAGES: ${MAX_PDF_PAGES:-50}
+      PDF_OCR_DPI: ${PDF_OCR_DPI:-180}
+      OCR_LANGUAGES: ${OCR_LANGUAGES:-spa+eng}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-10}
+    volumes:
+      - document_uploads:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: ["python", "-m", "rag_assistant.web.worker"]
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: rag_assistant
+      DB_USER: rag
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-localdevpassword}
+      DOCUMENT_STORAGE_PATH: /data/uploads
+      WORKER_POLL_SECONDS: ${WORKER_POLL_SECONDS:-2}
+      WORKER_STALE_AFTER_SECONDS: ${WORKER_STALE_AFTER_SECONDS:-600}
+      MAX_PDF_PAGES: ${MAX_PDF_PAGES:-50}
+      PDF_OCR_DPI: ${PDF_OCR_DPI:-180}
+      OCR_LANGUAGES: ${OCR_LANGUAGES:-spa+eng}
+    volumes:
+      - document_uploads:/data/uploads
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      API_PROXY_TARGET: http://api:8000
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  document_uploads:
