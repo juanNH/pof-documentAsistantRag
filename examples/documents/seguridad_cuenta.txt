@@ -1,0 +1,3 @@
+Para restablecer tu contraseña, solicita un enlace desde la pantalla de inicio de sesión. El enlace vence después de 20 minutos y solo puede usarse una vez.
+
+Si todavía tienes acceso a tu cuenta, activa la verificación en dos pasos desde la sección de seguridad.

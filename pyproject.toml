@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pof-document-assistant-rag"
+version = "0.1.0"
+description = "Educational local RAG assistant for TXT and Markdown documents"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+rag-assistant = "rag_assistant.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rag_assistant*"]

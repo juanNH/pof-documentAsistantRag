@@ -1,0 +1,26 @@
+[
+  {
+    "id": "devoluciones-plazo",
+    "question": "¿Cuántos días posteriores a la compra permiten solicitar una devolución?",
+    "expected_source": "politica_devoluciones.md",
+    "answerable": true
+  },
+  {
+    "id": "api-cuota",
+    "question": "¿Qué código HTTP responde la API cuando se supera la cuota?",
+    "expected_source": "guia_api.md",
+    "answerable": true
+  },
+  {
+    "id": "cuenta-contrasena",
+    "question": "¿Cómo puedo restablecer la contraseña con un enlace?",
+    "expected_source": "seguridad_cuenta.txt",
+    "answerable": true
+  },
+  {
+    "id": "asteria-finanzas",
+    "question": "¿Quién fue el director financiero del proyecto Asteria?",
+    "expected_source": "proyecto_asteria.md",
+    "answerable": false
+  }
+]
